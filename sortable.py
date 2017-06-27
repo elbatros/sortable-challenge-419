@@ -26,8 +26,8 @@ def main(args):
             obj = {"product_name": products[product_idx].json_obj["product_name"], "listings": []}
             for listing_idx in product_to_listings[product_idx]:
                 obj["listings"].append(listings[listing_idx].json_obj)
-            fout.write(json.dumps(obj, sort_keys=True, indent=4) + "\n") 
-            #fout.write(json.dumps(obj) + "\n") 
+            #fout.write(json.dumps(obj, sort_keys=True, indent=4) + "\n") 
+            fout.write(json.dumps(obj) + "\n") 
 
 if __name__ == "__main__": 
     parser = argparse.ArgumentParser(description='sortable challenge')
