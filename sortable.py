@@ -17,7 +17,8 @@ def main(args):
     with open(args.listings, "r") as fin:
         for line in fin:
             listings.append(Listing(line))
-        
+
+    # link listings to products
     product_to_listings = DataMapping.product_listing_mapping(products, listings)
     
     with open(args.output, "w") as fout:

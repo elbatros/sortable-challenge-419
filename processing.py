@@ -28,7 +28,7 @@ class DataMapping(object):
             return None
 
         prod_id_to_score = {}
-        title_tokens = listing.title.split(" ")
+        title_tokens = listing.title.split()
         for term in title_tokens:
             term_obj = invert_idx.invert_idx.get(term, None)
             if term_obj is not None:
@@ -44,10 +44,25 @@ class DataMapping(object):
         logger.debug("ProductId to scores: " + str(prod_id_to_score))
         
         # find the first matched product
-        # consider model and family
+        # for each term in product's model and family, see if they can be found in title_tokens
+        # fix partial matching issue like target model 'D60' but get 'D600'
+        title_tokens_dict = { title_tokens[i]: True for i in range(len(title_tokens)) } # use dict for better lookup performance
         for (prod_id, score) in prod_id_to_score:
             prod = products[prod_id]
-            if prod.model in listing.title and (prod.family == "" or prod.family in listing.title):
+            is_found = True
+            # deal with model
+            for term in prod.model.split():
+                if not term in title_tokens_dict:
+                    is_found = False
+                    break
+            # deal with family
+            # family is an optional field, "" if not provided
+            if is_found and prod.family != "":
+                for term in prod.family.split():
+                    if not term in title_tokens_dict:
+                        is_found = False
+                        break
+            if is_found:
                 return prod_id
 
         return None
@@ -74,7 +89,7 @@ class DataMapping(object):
             logger.debug("productIdx: " + str(productIdx) + ", manufacturer: " + prod.manufacturer)
             invert_idx = manufacturer_to_invert_idx.setdefault(prod.manufacturer, InvertIdx())
             logger.debug("invert_idx: " + str(invert_idx.invert_idx))
-            for term in prod.product_name.split(" "):
+            for term in prod.product_name.split():
                 logger.debug("term: " + term)
                 invert_idx.insert_term(term, productIdx)
             logger.debug("invert_idx after insert: " + str(invert_idx.invert_idx))

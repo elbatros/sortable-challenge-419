@@ -18,6 +18,7 @@ class Utils(object):
 class Product(object):
     """Product info
     """
+
     def __init__(self, json_str):
         self.product_name = ""
         self.manufacturer = ""
